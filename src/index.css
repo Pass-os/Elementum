@@ -1,0 +1,28 @@
+@import 'tailwindcss';
+
+@theme {
+   /* Cores principais */
+   --primary: #2563eb;
+   --secondary: #64748b;
+
+   --accent: #f59e0b;
+
+   /* Cores de fundo */
+   --background: #ffffff;
+
+   /* Cores de texto */
+   --text-primary: #1e293b;
+   --text-secondary: #475569;
+   --text-muted: #64748b;
+   --text-inverse: #ffffff;
+
+   /* Cores de estado */
+   --success: #22c55e;
+   --warning: #f59e0b;
+   --error: #ef4444;
+   --info: #3b82f6;
+
+   /* Tipografia */
+   --font-family-base: system-ui, -apple-system, sans-serif;
+   --font-family-heading: system-ui, -apple-system, sans-serif;
+}
