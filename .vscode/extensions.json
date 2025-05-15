@@ -1,0 +1,9 @@
+{
+    "recommendations": [
+        "miguelsolorio.symbols",
+        "streetsidesoftware.code-spell-checker-portuguese-brazilian",
+        "streetsidesoftware.code-spell-checker",
+        "SonarSource.sonarlint-vscode",
+        "bradlc.vscode-tailwindcss"
+    ]
+}

@@ -2,7 +2,7 @@ import { useEffect, useState, type PropsWithChildren } from 'react';
 import { AppThemeContext } from './context';
 import type { Theme } from './types';
 
-export const ThemeProvider = ({ children }: PropsWithChildren) => {
+export const AppThemeProvider = ({ children }: PropsWithChildren) => {
    const [theme, setTheme] = useState<Theme>(() => {
       if (typeof window !== 'undefined') {
          const storedTheme = localStorage.getItem('theme') as Theme | null;
