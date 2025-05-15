@@ -1,22 +1,32 @@
-import { Button } from '@/components/ui/button';
-import { Background, Controls, MiniMap, ReactFlow } from '@xyflow/react';
+import ElementNode from '@/components/ElementNode';
+import { Background, Controls, ReactFlow, type NodeTypes } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import useCore from './hook';
 
 export default function HomePage() {
-   const { nodes, edges, reactFlowWrapper, onInit, handleCombine } = useCore();
+   const {
+      nodes,
+      edges,
+      reactFlowWrapper,
+
+      onNodesChange,
+      onEdgesChange,
+      onConnect,
+   } = useCore();
+
+   const nodeTypes: NodeTypes = { custom: ElementNode };
 
    return (
       <div style={{ width: '100vw', height: '100vh' }} ref={reactFlowWrapper}>
-         <Button
-            onClick={() => handleCombine('fogo', 'agua')}
-            className="absolute z-10 -translate-x-1/2 left-1/2 top-4 cursor-pointer"
+         <ReactFlow
+            nodes={nodes}
+            edges={edges}
+            nodeTypes={nodeTypes}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            onConnect={onConnect}
+            fitView
          >
-            Combinar Fogo + Água
-         </Button>
-
-         <ReactFlow nodes={nodes} edges={edges} onInit={onInit} fitView>
-            <MiniMap />
             <Controls />
             <Background gap={16} />
          </ReactFlow>

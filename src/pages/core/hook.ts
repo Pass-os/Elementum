@@ -1,65 +1,76 @@
-import { type Edge, type Node, type ReactFlowInstance } from '@xyflow/react';
+import {
+   addEdge,
+   applyEdgeChanges,
+   applyNodeChanges,
+   type Edge,
+   type EdgeChange,
+   type Node,
+   type NodeChange,
+} from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { useCallback, useRef, useState } from 'react';
-import { combinations, initialEdges, initialNodes } from './constants';
-import type { ElementKey } from './types';
+import { combinations, elements, initialNodes } from './constants';
+import type { Element, ElementKey, ElementNode } from './types';
 
 export default function useCore() {
-   const [nodes, setNodes] = useState<Node[]>(initialNodes);
-   console.log('🧪 nodes: ', nodes);
-   const [edges, setEdges] = useState<Edge[]>(initialEdges);
-   const [counter, setCounter] = useState(3);
-
+   const [nodes, setNodes] = useState<ElementNode[]>(initialNodes);
+   const [edges, setEdges] = useState<Edge[]>([]);
    const reactFlowWrapper = useRef<HTMLDivElement>(null);
-   const [rfInstance, setRfInstance] = useState<ReactFlowInstance | null>(null);
 
    const handleCombine = (...sources: ElementKey[]) => {
       const permutations = [
          sources.join('+'),
          [...sources].reverse().join('+'),
       ];
-      const resultLabel =
-         combinations[permutations[0]] || combinations[permutations[1]];
-      if (!resultLabel) return;
 
-      const existing = nodes.find((n) => n.data.label === resultLabel);
+      const elementId =
+         combinations[permutations[0]] || combinations[permutations[1]];
+
+      if (!elementId) return;
+
+      const existing = nodes.find((n) => n.data.label === elementId);
+
       if (existing) return;
 
-      const newId = counter.toString();
-      const newNode: Node = {
-         id: newId,
-         type: 'default',
+      const newNode: ElementNode = {
+         id: elementId,
+         type: 'custom',
          position: { x: Math.random() * 400, y: Math.random() * 400 },
-         data: { label: resultLabel },
+         data: elements[elementId],
+         draggable: true,
       };
 
       const sourceNodes = sources
          .map((elementId) => nodes.find((n) => n.data.id === elementId))
-         .filter(Boolean) as Node[];
-      console.log('🧪 sourceNodes: ', sourceNodes);
+         .filter(Boolean) as Node<Element>[];
+
       if (sourceNodes.length !== sources.length) return;
 
-      setNodes((nds) => [...nds, newNode]);
+      setNodes((nds) => [...nds, newNode as ElementNode<'custom'>]);
+
       setEdges((eds) => [
          ...eds,
          ...sourceNodes.map((src) => ({
-            id: `e-${src.id}-${newId}`,
+            id: `e-${src.id}-${elementId}`,
             source: src.id,
-            target: newId,
+            target: elementId,
          })),
       ]);
-      setCounter((c) => c + 1);
-
-      setTimeout(() => {
-         if (rfInstance) {
-            rfInstance.fitView({ nodes: [newNode], padding: 0.4 });
-         }
-      }, 100);
    };
 
-   const onInit = useCallback(
-      (instance: ReactFlowInstance) => setRfInstance(instance),
-      [],
+   const onNodesChange = useCallback(
+      (changes: NodeChange<any>[]) =>
+         setNodes((nds) => applyNodeChanges(changes, nds)),
+      [setNodes],
+   );
+   const onEdgesChange = useCallback(
+      (changes: EdgeChange<any>[]) =>
+         setEdges((eds) => applyEdgeChanges(changes, eds)),
+      [setEdges],
+   );
+   const onConnect = useCallback(
+      (connection: any) => setEdges((eds) => addEdge(connection, eds)),
+      [setEdges],
    );
 
    return {
@@ -67,6 +78,10 @@ export default function useCore() {
       edges,
       reactFlowWrapper,
       handleCombine,
-      onInit,
+      setEdges,
+      setNodes,
+      onNodesChange,
+      onEdgesChange,
+      onConnect,
    };
 }
